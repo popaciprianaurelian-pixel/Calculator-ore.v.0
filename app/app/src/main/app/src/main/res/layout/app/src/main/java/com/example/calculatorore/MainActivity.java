@@ -1,64 +1,93 @@
 package com.example.calculatorore;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    private EditText etStart, etEnd;
-    private TextView tvResult;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        etStart = findViewById(R.id.etStart);
-        etEnd = findViewById(R.id.etEnd);
-        Button btnCalculate = findViewById(R.id.btnCalculate);
-        tvResult = findViewById(R.id.tvResult);
+        // Construim interfata direct din Java (fara fisiere XML de layout)
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 80, 60, 60);
+        layout.setGravity(Gravity.CENTER_HORIZONTAL);
+        layout.setBackgroundColor(Color.WHITE);
 
-        btnCalculate.setOnClickListener(new View.OnClickListener() {
+        TextView tvTitle = new TextView(this);
+        tvTitle.setText("Calculator Ore Munca");
+        tvTitle.setTextSize(22);
+        tvTitle.setTextColor(Color.BLACK);
+        tvTitle.setGravity(Gravity.CENTER);
+        tvTitle.setPadding(0, 0, 0, 40);
+        layout.addView(tvTitle);
+
+        final EditText etStart = new EditText(this);
+        etStart.setHint("Ora inceput (ex: 07:25)");
+        etStart.setTextColor(Color.BLACK);
+        etStart.setHintTextColor(Color.GRAY);
+        layout.addView(etStart);
+
+        final EditText etEnd = new EditText(this);
+        etEnd.setHint("Ora sfarsit (ex: 19:30)");
+        etEnd.setTextColor(Color.BLACK);
+        etEnd.setHintTextColor(Color.GRAY);
+        layout.addView(etEnd);
+
+        Button btnCalc = new Button(this);
+        btnCalc.setText("Calculeaza");
+        layout.addView(btnCalc);
+
+        final TextView tvResult = new TextView(this);
+        tvResult.setTextSize(18);
+        tvResult.setTextColor(Color.BLACK);
+        tvResult.setGravity(Gravity.CENTER);
+        tvResult.setPadding(0, 40, 0, 0);
+        layout.addView(tvResult);
+
+        setContentView(layout);
+
+        btnCalc.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                calculateHours();
+                String startStr = etStart.getText().toString().trim();
+                String endStr = etEnd.getText().toString().trim();
+
+                try {
+                    String[] startParts = startStr.split(":");
+                    String[] endParts = endStr.split(":");
+
+                    int startHour = Integer.parseInt(startParts[0]);
+                    int startMinute = Integer.parseInt(startParts[1]);
+
+                    int endHour = Integer.parseInt(endParts[0]);
+                    int endMinute = Integer.parseInt(endParts[1]);
+
+                    int startTotal = startHour * 60 + startMinute;
+                    int endTotal = endHour * 60 + endMinute;
+
+                    if (endTotal < startTotal) {
+                        endTotal += 24 * 60;
+                    }
+
+                    int diff = endTotal - startTotal;
+                    int h = diff / 60;
+                    int m = diff % 60;
+
+                    tvResult.setText("Total lucrat: " + h + " ore si " + m + " minute");
+                } catch (Exception e) {
+                    tvResult.setText("Format invalid! Folositi formatul HH:MM (ex: 07:25)");
+                }
             }
         });
     }
-
-    private void calculateHours() {
-        String startStr = etStart.getText().toString().trim();
-        String endStr = etEnd.getText().toString().trim();
-
-        try {
-            String[] startParts = startStr.split(":");
-            String[] endParts = endStr.split(":");
-
-            int startHour = Integer.parseInt(startParts[0]);
-            int startMinute = Integer.parseInt(startParts[1]);
-
-            int endHour = Integer.parseInt(endParts[0]);
-            int endMinute = Integer.parseInt(endParts[1]);
-
-            int startTotalMinutes = startHour * 60 + startMinute;
-            int endTotalMinutes = endHour * 60 + endMinute;
-
-            if (endTotalMinutes < startTotalMinutes) {
-                endTotalMinutes += 24 * 60;
-            }
-
-            int diffMinutes = endTotalMinutes - startTotalMinutes;
-            int hours = diffMinutes / 60;
-            int minutes = diffMinutes % 60;
-
-            tvResult.setText("Total ore: " + hours + "h " + minutes + "m");
-        } catch (Exception e) {
-            tvResult.setText("Introduceți ore valide (HH:MM)");
-        }
-    }
 }
-
