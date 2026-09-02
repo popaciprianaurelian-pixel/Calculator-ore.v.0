@@ -1,27 +1,9 @@
-plugins {
-    id 'com.android.application'
-}
-
-android {
-    namespace 'com.example.calculatorore'
-    compileSdk 34
-
-    defaultConfig {
-        applicationId "com.example.calculatorore"
-        minSdk 24
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
     }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-        }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.1'
     }
 }
-
-dependencies {
-    // Fără dependențe externe greoaie; folosim API-ul nativ de sistem
-}
-
